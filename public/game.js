@@ -197,52 +197,9 @@ function mainLoop(){
         console.log(`New player, ${data[0]}, number of players: ${players.length}`);
     });
 
-// socket.on('moveDown', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveDown = true;
-// });
-// socket.on('moveUp', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveUp = true;
-// });
-// socket.on('moveLeft', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveLeft = true;
-// });
-// socket.on('moveRight', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveRight = true;
-// });
-// socket.on('dropBomb', (data) => {
-//     if(g.playerArr[players.indexOf(data.playerID)].bombAmmo > 0){
-//         if (m.bombMap[g.playerArr[players.indexOf(data.playerID)].iGrid][g.playerArr[players.indexOf(data.playerID)].jGrid] === 'free') {
-//             // Create new bomb (player, player Y, player X, player bomb power, bomb ID)
-//             let newBomb = (new Bomb(g.playerArr[players.indexOf(data.playerID)], g.playerArr[players.indexOf(data.playerID)].iGrid, g.playerArr[players.indexOf(data.playerID)].jGrid, g.playerArr[players.indexOf(data.playerID)].bombPower, bombIDs));
-//             bombIDs++;
-//             newBomb.gridPlacer();
-//             newBomb.timerExplode();
-//             g.playerArr[players.indexOf(data.playerID)].bombAmmo -= 1;
-//         }
-//     }       
-// });
-
-// socket.on('moveDownFalse', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveDown = false;
-//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "down";
-// });
-// socket.on('moveUpFalse', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveUp = false;
-//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "up";
-// });
-// socket.on('moveLeftFalse', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveLeft = false;
-//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "left"
-// });
-// socket.on('moveRightFalse', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveRight = false;
-//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "right"
-// });
-
-
 socket.on('movement', (data) => {
     // console.log('receving server movement')
-    if(!selectScreen){
+    if(mainGame){
         g.playerArr[players.indexOf(data.playerID)].moveRight = data.right;
         g.playerArr[players.indexOf(data.playerID)].moveLeft = data.left;
         g.playerArr[players.indexOf(data.playerID)].moveUp = data.up;
@@ -280,11 +237,32 @@ socket.on('movement', (data) => {
             }
         }
     }
+    if(startScreen){
+        // console.log(data);
+        
+        g.playerArr[players.indexOf(data.playerID)].moveRight = data.right;
+        g.playerArr[players.indexOf(data.playerID)].moveLeft = data.left;
+        g.playerArr[players.indexOf(data.playerID)].moveUp = data.up;
+        g.playerArr[players.indexOf(data.playerID)].moveDown = data.down;
+        g.spriteArr[players.indexOf(data.playerID)].lastPressed = data.tempPressed;
+        if(data.bomb){
+            if(g.playerArr[players.indexOf(data.playerID)].bombAmmo > 0){
+                if (m.bombMap[g.playerArr[players.indexOf(data.playerID)].iGrid][g.playerArr[players.indexOf(data.playerID)].jGrid] === 'free') {
+                    // Create new bomb (player, player Y, player X, player bomb power, bomb ID)
+                    let newBomb = (new Bomb(g.playerArr[players.indexOf(data.playerID)], g.playerArr[players.indexOf(data.playerID)].iGrid, g.playerArr[players.indexOf(data.playerID)].jGrid, g.playerArr[players.indexOf(data.playerID)].bombPower, bombIDs));
+                    bombIDs++;
+                    newBomb.gridPlacer();
+                    newBomb.timerExplode();
+                    g.playerArr[players.indexOf(data.playerID)].bombAmmo -= 1;
+                }
+            }   
+        }
+    }
 });
 
 socket.on('startscreen', ()=>{
     selectScreen = false;
-
+    startScreen = true;
 })
         
         

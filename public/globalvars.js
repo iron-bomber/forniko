@@ -1,5 +1,5 @@
 let host = false;
-let selectScreen = false;
+let selectScreen = true;
 let startScreen = false;
 let mainGame = false;
 let gameRunning = false;
