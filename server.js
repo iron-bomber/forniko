@@ -174,7 +174,19 @@ io.on('connection', (socket) => {
         clearInterval(mainFrameInterval)    //Stops mainLoop animation
         serverRoundStarted = false;         //Lets client restart the round
     })
+    socket.on('select', (select) => {
+        emitSelect(select);
+    })
+    socket.on('start', (select) => {
+        emitStart(select);
+    })
     
+    function emitSelect (select) {
+        io.sockets.emit('selecting', select);
+    }
+    function emitStart (select) {
+        io.sockets.emit('starting', select);
+    }
         
     
     // //DECIDES HOST
