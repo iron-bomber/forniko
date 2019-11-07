@@ -133,7 +133,13 @@ io.on('connection', (socket) => {
     let sendNewPlayer = [socket.id, players];
     io.sockets.emit('newPlayer', sendNewPlayer);
     if (players.length > 1) {
-        io.sockets.emit('startScreen');
+        // io.sockets.emit('startScreen');
+        console.log('starting game');
+            serverRoundStarted = true;                    //Prevents this from being called by all players
+                io.sockets.emit('start-game', theMap);    //Starts all players games
+                mainFrameInterval =  setInterval(()=>{    
+                    io.sockets.emit('ram', (true))        //sends animation frame to all players
+                },1000/60)
     }
 
     // ALTERNATE START GAME BASED ON ROUND RESET
