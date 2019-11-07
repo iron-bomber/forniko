@@ -6,6 +6,11 @@ class Bomb {
         this.power = power;
         this.exploding = false;
         this.bombID = bombID;
+        this.bombssNum = 0;
+        this.bombframeCounter = 0;
+        this.bombframeRate = 10;
+        this.bombtotalFrames = this.bombframeRate*4;
+        this.bombSprites = [bomb1, bomb2, bomb3, bomb4];
     }
 
     placeRandomPowerup(){
@@ -172,11 +177,7 @@ class Bomb {
                         m.bombMap[this.iGrid-i][this.jGrid] = 'free';
                     } else if (m.bombMap[this.iGrid-i][this.jGrid] === -this.bombID){
                         // Places random powerup if space previously contained a rock
-                        if (m.powerUps[this.iGrid-i][this.jGrid] === "speed" || m.powerUps[this.iGrid-i][this.jGrid] === "bombpower" || m.powerUps[this.iGrid-i][this.jGrid] === "extrabomb"){
-                            m.bombMap[this.iGrid-i][this.jGrid] = m.powerUps[this.iGrid-i][this.jGrid];
-                        } else {
-                            m.bombMap[this.iGrid-i][this.jGrid] = 'free';
-                        }
+                        m.bombMap[this.iGrid-i][this.jGrid] = this.placeRandomPowerup();
                     }
                 }
                 // Clear below
@@ -184,11 +185,7 @@ class Bomb {
                     if (m.bombMap[this.iGrid+i][this.jGrid] === this.bombID) {
                         m.bombMap[this.iGrid+i][this.jGrid] = 'free';
                     } else if (m.bombMap[this.iGrid+i][this.jGrid] === -this.bombID){
-                        if (m.powerUps[this.iGrid+i][this.jGrid] === "speed" || m.powerUps[this.iGrid+i][this.jGrid] === "bombpower" || m.powerUps[this.iGrid+i][this.jGrid] === "extrabomb"){
-                            m.bombMap[this.iGrid+i][this.jGrid] = m.powerUps[this.iGrid+i][this.jGrid];
-                        } else {
-                            m.bombMap[this.iGrid+i][this.jGrid] = 'free';
-                        }
+                        m.bombMap[this.iGrid+i][this.jGrid] = this.placeRandomPowerup();
                     }
                 }
                 // Clear right
@@ -196,11 +193,7 @@ class Bomb {
                     if (m.bombMap[this.iGrid][this.jGrid+i] === this.bombID) {
                         m.bombMap[this.iGrid][this.jGrid+i] = 'free';
                     } else if (m.bombMap[this.iGrid][this.jGrid+i] === -this.bombID){
-                        if (m.powerUps[this.iGrid][this.jGrid+i] === "speed" || m.powerUps[this.iGrid][this.jGrid+i] === "bombpower" || m.powerUps[this.iGrid][this.jGrid+i] === "extrabomb"){
-                            m.bombMap[this.iGrid][this.jGrid+i] = m.powerUps[this.iGrid][this.jGrid+i];
-                        } else {
-                            m.bombMap[this.iGrid][this.jGrid+i] = 'free';
-                        }
+                        m.bombMap[this.iGrid][this.jGrid+i] = this.placeRandomPowerup();
                     }
                 }
                 // Clear left
@@ -208,11 +201,7 @@ class Bomb {
                     if (m.bombMap[this.iGrid][this.jGrid-i] === this.bombID) {
                         m.bombMap[this.iGrid][this.jGrid-i] = 'free';
                     } else if (m.bombMap[this.iGrid][this.jGrid-i] === -this.bombID){
-                        if (m.powerUps[this.iGrid][this.jGrid-i] === "speed" || m.powerUps[this.iGrid][this.jGrid-i] === "bombpower" || m.powerUps[this.iGrid][this.jGrid-i] === "extrabomb"){
-                            m.bombMap[this.iGrid][this.jGrid-i] = m.powerUps[this.iGrid][this.jGrid-i];
-                        } else {
-                            m.bombMap[this.iGrid][this.jGrid-i] = 'free';
-                        }
+                        m.bombMap[this.iGrid][this.jGrid-i] = this.placeRandomPowerup();
                     }
                 }
             }

@@ -1,5 +1,4 @@
 //ALL PLAYER KEYSTROKES SENT TO SERVER ON SET INTERVAL
-
 let tempUp = false;
 let tempRight = false;
 let tempLeft = false;
@@ -7,8 +6,8 @@ let tempDown = false;
 let tempPressed = "down";
 let tempBomb = false;
 function startMovement() {
-        // console.log('sending movement to server')
-        let movementInterval = setInterval(()=>{
+        console.log('sending movement to server')
+        setInterval(()=>{
             // console.log('movement sending')
             let data = {
                 playerID: socket.id,
@@ -18,6 +17,7 @@ function startMovement() {
                 right: tempRight,
                 bomb: tempBomb,
                 tempPressed: tempPressed,
+                host: host,
             }
             socket.emit('movement', (data))
             tempBomb = false;
@@ -46,6 +46,7 @@ document.onkeypress = function(e){
     if(e.keyCode === 32){
         e.preventDefault();
         tempBomb = true;
+        on = true;
     }
 }
 

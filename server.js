@@ -132,7 +132,12 @@ io.on('connection', (socket) => {
     players.push(socket.id);
     let sendNewPlayer = [socket.id, players];
     io.sockets.emit('newPlayer', sendNewPlayer);
-    if (players.length > 1) {
+
+    if(players.length == 1){
+        io.sockets.emit('youhost')
+    }
+
+    if (players.length > 0) {
         // io.sockets.emit('startScreen');
         console.log('starting game');
             serverRoundStarted = true;                    //Prevents this from being called by all players
@@ -152,6 +157,10 @@ io.on('connection', (socket) => {
                     io.sockets.emit('ram', (true))        //sends animation frame to all players
                 },1000/60)
         }
+    })
+
+    socket.on('startscreen', ()=>{
+        io.sockets.emit('startscreen')
     })
     
     //New Movement data
