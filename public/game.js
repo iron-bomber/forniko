@@ -219,26 +219,17 @@ socket.on('movement', (data) => {
             }   
         }
     }
-    if(selectScreen){
-        // console.log(data);
-        let up = data.up;
-        let down = data.down;
-        let spacebar = data.bomb;
-        let on = data.on;
-        // console.log(sel)
-        if(host){
-            if(up){
-                sel.movePosition(sel.p1, "w")
-            }
-            if(down){
-                sel.movePosition(sel.p1, "s")
-            }
-            if(spacebar){
-                socket.emit('startscreen')
-            }
-        }
-    }
 });
+
+socket.on('select', (data)=>{
+    sel.movePosition(sel.p1, data.key)
+})
+
+socket.on('start', (select)=>{
+    s.movePosition(s[`p${players.indexOf(select.socketID)+1}`], select.key);
+})
+
+
 
 socket.on('startscreen', ()=>{
     console.log('startscreen logic received')
