@@ -83,6 +83,7 @@ socket.on('ram', (data) =>{
             selectLoop();
         }
         if(startScreen === true){
+            console.log('starting startscreen')
             startLoop()
         }
         if(mainGame === true){
@@ -237,31 +238,12 @@ socket.on('movement', (data) => {
             }
         }
     }
-    if(startScreen){
-        // console.log(data);
-        
-        g.playerArr[players.indexOf(data.playerID)].moveRight = data.right;
-        g.playerArr[players.indexOf(data.playerID)].moveLeft = data.left;
-        g.playerArr[players.indexOf(data.playerID)].moveUp = data.up;
-        g.playerArr[players.indexOf(data.playerID)].moveDown = data.down;
-        g.spriteArr[players.indexOf(data.playerID)].lastPressed = data.tempPressed;
-        if(data.bomb){
-            if(g.playerArr[players.indexOf(data.playerID)].bombAmmo > 0){
-                if (m.bombMap[g.playerArr[players.indexOf(data.playerID)].iGrid][g.playerArr[players.indexOf(data.playerID)].jGrid] === 'free') {
-                    // Create new bomb (player, player Y, player X, player bomb power, bomb ID)
-                    let newBomb = (new Bomb(g.playerArr[players.indexOf(data.playerID)], g.playerArr[players.indexOf(data.playerID)].iGrid, g.playerArr[players.indexOf(data.playerID)].jGrid, g.playerArr[players.indexOf(data.playerID)].bombPower, bombIDs));
-                    bombIDs++;
-                    newBomb.gridPlacer();
-                    newBomb.timerExplode();
-                    g.playerArr[players.indexOf(data.playerID)].bombAmmo -= 1;
-                }
-            }   
-        }
-    }
 });
 
 socket.on('startscreen', ()=>{
+    console.log('startscreen logic received')
     selectScreen = false;
+    s = new Startscreen();
     startScreen = true;
 })
         
@@ -652,8 +634,6 @@ function restartSession(){
     gameRunning = false;
     gameComplete = false;
     stopMainLoop = true;
-    document.querySelector('.startbutton').disabled = false;
-    startLoop();
     commands();
 }
 
