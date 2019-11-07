@@ -83,6 +83,7 @@ socket.on('ram', (data) =>{
             selectLoop();
         }
         if(startScreen === true){
+            console.log('starting startscreen')
             startLoop()
         }
         if(mainGame === true){
@@ -197,52 +198,9 @@ function mainLoop(){
         console.log(`New player, ${data[0]}, number of players: ${players.length}`);
     });
 
-// socket.on('moveDown', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveDown = true;
-// });
-// socket.on('moveUp', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveUp = true;
-// });
-// socket.on('moveLeft', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveLeft = true;
-// });
-// socket.on('moveRight', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveRight = true;
-// });
-// socket.on('dropBomb', (data) => {
-//     if(g.playerArr[players.indexOf(data.playerID)].bombAmmo > 0){
-//         if (m.bombMap[g.playerArr[players.indexOf(data.playerID)].iGrid][g.playerArr[players.indexOf(data.playerID)].jGrid] === 'free') {
-//             // Create new bomb (player, player Y, player X, player bomb power, bomb ID)
-//             let newBomb = (new Bomb(g.playerArr[players.indexOf(data.playerID)], g.playerArr[players.indexOf(data.playerID)].iGrid, g.playerArr[players.indexOf(data.playerID)].jGrid, g.playerArr[players.indexOf(data.playerID)].bombPower, bombIDs));
-//             bombIDs++;
-//             newBomb.gridPlacer();
-//             newBomb.timerExplode();
-//             g.playerArr[players.indexOf(data.playerID)].bombAmmo -= 1;
-//         }
-//     }       
-// });
-
-// socket.on('moveDownFalse', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveDown = false;
-//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "down";
-// });
-// socket.on('moveUpFalse', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveUp = false;
-//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "up";
-// });
-// socket.on('moveLeftFalse', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveLeft = false;
-//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "left"
-// });
-// socket.on('moveRightFalse', (data) => {
-//     g.playerArr[players.indexOf(data.playerID)].moveRight = false;
-//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "right"
-// });
-
-
 socket.on('movement', (data) => {
     // console.log('receving server movement')
-    if(!selectScreen){
+    if(mainGame){
         g.playerArr[players.indexOf(data.playerID)].moveRight = data.right;
         g.playerArr[players.indexOf(data.playerID)].moveLeft = data.left;
         g.playerArr[players.indexOf(data.playerID)].moveUp = data.up;
@@ -261,30 +219,23 @@ socket.on('movement', (data) => {
             }   
         }
     }
-    if(selectScreen){
-        // console.log(data);
-        let up = data.up;
-        let down = data.down;
-        let spacebar = data.bomb;
-        let on = data.on;
-        // console.log(sel)
-        if(host){
-            if(up){
-                sel.movePosition(sel.p1, "w")
-            }
-            if(down){
-                sel.movePosition(sel.p1, "s")
-            }
-            if(spacebar){
-                socket.emit('startscreen')
-            }
-        }
-    }
 });
 
-socket.on('startscreen', ()=>{
-    selectScreen = false;
+socket.on('select', (data)=>{
+    sel.movePosition(sel.p1, data.key)
+})
 
+socket.on('start', (select)=>{
+    s.movePosition(s[`p${players.indexOf(select.socketID)+1}`], select.key);
+})
+
+
+
+socket.on('startscreen', ()=>{
+    console.log('startscreen logic received')
+    selectScreen = false;
+    s = new Startscreen();
+    startScreen = true;
 })
         
         
@@ -674,8 +625,6 @@ function restartSession(){
     gameRunning = false;
     gameComplete = false;
     stopMainLoop = true;
-    document.querySelector('.startbutton').disabled = false;
-    startLoop();
     commands();
 }
 
