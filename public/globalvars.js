@@ -1,4 +1,3 @@
-let host = false;
 let playerOneDead = false;
 let playerTwoDead = false;
 let playerOneX;

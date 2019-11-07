@@ -15,6 +15,16 @@ app.use(express.static('public'));
 // Socket setup
 let io = socket(server);
 
+
+//Set intervals
+let mainFrameInterval;
+
+
+//Server globals
+let serverRoundStarted = false;
+
+
+
 class BombMap {
     constructor(){
         this.bombMap = [
@@ -122,19 +132,34 @@ io.on('connection', (socket) => {
     players.push(socket.id);
     let sendNewPlayer = [socket.id, players];
     io.sockets.emit('newPlayer', sendNewPlayer);
-    if (players.length > 0) {
-        console.log('starting game');
-            io.sockets.emit('start-game', theMap);
-            let frameInterval = setInterval(()=>{
-                io.sockets.emit('ram', (true))
-            },1000/60)
+    if (players.length > 1) {
+        io.sockets.emit('startScreen');
     }
+
+    // ALTERNATE START GAME BASED ON ROUND RESET
+    socket.on('start',()=> {
+        if(!serverRoundStarted){
+            console.log('starting game');
+            serverRoundStarted = true;                    //Prevents this from being called by all players
+                io.sockets.emit('start-game', theMap);    //Starts all players games
+                mainFrameInterval =  setInterval(()=>{    
+                    io.sockets.emit('ram', (true))        //sends animation frame to all players
+                },1000/60)
+        }
+    })
     
     //New Movement data
     socket.on('movement', (data) => {
-            io.sockets.emit('movement', data);
+            io.sockets.emit('movement', data);            //sends movement from one player to all players
     });
 
+    //STOPS SENDING FRAMES TO PLAYERS
+    socket.on('clearMainInterval', ()=>{
+        console.log('stopping main game')
+        clearInterval(mainFrameInterval)    //Stops mainLoop animation
+        serverRoundStarted = false;         //Lets client restart the round
+    })
+    
         
     
     // //DECIDES HOST

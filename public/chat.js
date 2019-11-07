@@ -1,3 +1,5 @@
+//ALL PLAYER KEYSTROKES SENT TO SERVER ON SET INTERVAL
+
 let tempUp = false;
 let tempRight = false;
 let tempLeft = false;

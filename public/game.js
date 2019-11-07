@@ -80,14 +80,16 @@ let go = true;
 socket.on('ram', (data) =>{
     if(data){
         mainLoop();
-        console.log(g.playerArr[0].speed)
+        // console.log(g.playerArr[0].speed)
     }
 })
         
 function mainLoop(){
     // console.log('mainloop')
+    console.log(playersLeft)
             
     if (playersLeft === 1) {
+        console.log('players left is one, resetting game')
         for(let i = 0; i < g.playerArr.length; i++) {
             if (typeof g.playerArr[i] === 'object') {
                 playerScores[`p${i+1}`] += 1;
@@ -99,10 +101,12 @@ function mainLoop(){
 
         playersLeft = 0;
         gameReset = true;
-        setTimeout(()=>{
-            initializeGame();
+        setTimeout(()=>{                        //After 5 seconds, tells server to reset round
+            socket.emit('clearMainInterval');
+            socket.emit('start');
         }, 5000)
     }
+    
     //GRID PLACER & MoveCheck
     for (let i = 0; i < g.playerArr.length; i++) {
         // console.log(g.playerArr.length)
@@ -134,13 +138,14 @@ function mainLoop(){
     if (playerTwoDead) {
         g.spriteArr[1].drawDeath(playerTwoX, playerTwoY);
     }
+
     
     
     //PLAYER SPRITES
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////
-
+    
     for (let i = 0; i < g.playerArr.length; i++) {
         if (g.playerArr[i].moveLeft == true && g.playerArr[i].moveRight == true && g.playerArr[i].moveUp == true){
             g.spriteArr[i].drawImgUp();
@@ -148,38 +153,42 @@ function mainLoop(){
         else if (g.playerArr[i].moveLeft == true && g.playerArr[i].moveRight == true && g.playerArr[i].moveDown == true){
             g.spriteArr[i].drawImgDown()
         }else if  
-            (  g.playerArr[i].moveLeft == true && g.playerArr[i].moveRight == true
+        (  g.playerArr[i].moveLeft == true && g.playerArr[i].moveRight == true
             || g.playerArr[i].moveUp == true && g.playerArr[i].moveDown == true
             || g.playerArr[i].moveLeft == true && g.playerArr[i].moveRight == true && g.playerArr[i].moveUp == true && g.playerArr[i].moveDown == true
             || g.playerArr[i].moveLeft == true && g.playerArr[i].moveRight == true && g.playerArr[i].moveUp == true && g.playerArr[i].moveDown == true
             || g.playerArr[i].moveLeft == false && g.playerArr[i].moveRight == false && g.playerArr[i].moveUp == false && g.playerArr[i].moveDown == false
-        ){
-            g.spriteArr[i].drawImgIdle();
+            ){
+                g.spriteArr[i].drawImgIdle();
+            }
+            else if(g.playerArr[i].moveLeft == true){
+                g.spriteArr[i].drawImgLeft()
+            }else if(g.playerArr[i].moveRight == true){
+                g.spriteArr[i].drawImgRight()
+            }else if(g.playerArr[i].moveUp == true){
+                g.spriteArr[i].drawImgUp()
+            }else if(g.playerArr[i].moveDown == true){
+                g.spriteArr[i].drawImgDown()
+            }
         }
-        else if(g.playerArr[i].moveLeft == true){
-            g.spriteArr[i].drawImgLeft()
-        }else if(g.playerArr[i].moveRight == true){
-            g.spriteArr[i].drawImgRight()
-        }else if(g.playerArr[i].moveUp == true){
-            g.spriteArr[i].drawImgUp()
-        }else if(g.playerArr[i].moveDown == true){
-            g.spriteArr[i].drawImgDown()
-        }
-    }
-
-    //Loop this function 60fps
 
 
-}// END OF MAIN LOOP
-
-
-let players;
-
-socket.on('newPlayer', (data) => {
-    players = data[1];
-    console.log(players);
-    console.log(`New player, ${data[0]}, number of players: ${players.length}`);
-});
+        //SHOW ROUND VICTORY SCREEN
+        // if(playersLeft === 0){
+        //     victoryScreen();
+        // }
+        
+        
+    }// END OF MAIN LOOP
+    
+    
+    let players;
+    
+    socket.on('newPlayer', (data) => {
+        players = data[1];
+        console.log(players);
+        console.log(`New player, ${data[0]}, number of players: ${players.length}`);
+    });
 
 // socket.on('moveDown', (data) => {
 //     g.playerArr[players.indexOf(data.playerID)].moveDown = true;
@@ -265,12 +274,13 @@ function initializeGame(data) {
     numOfPlayers = g.playerArr.length;
     playersLeft = g.playerArr.length;
     startMovement(); //Start movement emission to server
-    socket.emit('start');
     setTimeout(() => {
         gameReset = false;
     }, 2999);
 }
 
+
+//TELLS THIS CLIENT TO RESTART GAME
 socket.on('start-game', (data) => {
     initializeGame(data);
     mainLoop();
