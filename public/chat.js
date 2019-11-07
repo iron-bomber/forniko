@@ -30,8 +30,9 @@ console.log('you are now connected to the server')
 console.log('socket',socket)
 
 
-function controls() {
-    if(gameRunning) {
+function commands() {
+    console.log('commands')
+    if(mainGame) {
         document.onkeypress = function(e){
             if(e.key === "s" || e.key === "S"){
                 tempDown = true;
@@ -72,35 +73,37 @@ function controls() {
             }
         }
     } else if (selectScreen) {
+        console.log(host)
         if (host) {
             //Sending select character controls to server
             document.onkeypress = function(e){
                 if(e.key === "s" || e.key === "S"){
-                    socket.emit('select',
+                    console.log('emit s')
+                    socket.emit('selectCommands',
                     {
                         key: 's'
                     });
                 }
                 if(e.key === "w" || e.key === "W"){
-                    socket.emit('select',
+                    socket.emit('selectCommands',
                     {
                         key: 'w'
                     });
                 }
                 if(e.key === "a" || e.key === "A"){
-                    socket.emit('select',
+                    socket.emit('selectCommands',
                     {
                         key: 'a'
                     });
                 }
                 if(e.key === "d" || e.key === "D"){
-                    socket.emit('select',
+                    socket.emit('selectCommands',
                     {
                         key: 'd'
                     });
                 }
                 if(e.keyCode === 32) {
-                    socket.emit('select',
+                    socket.emit('selectCommands',
                     {
                         key: 'spacebar',
                     });
@@ -109,38 +112,40 @@ function controls() {
         }
 
     } else if (startScreen) {
+        console.log('startscreen input')
         //Sending select character controls to server
         document.onkeypress = function(e){
             if(e.key === "s" || e.key === "S"){
-                socket.emit('start',
+                console.log('startscreen s')
+                socket.emit('startCommands',
                 {
                     key: 's',
                     socketID: socket.id
                 });
             }
             if(e.key === "w" || e.key === "W"){
-                socket.emit('start',
+                socket.emit('startCommands',
                 {
                     key: 'w',
                     socketID: socket.id
                 });
             }
             if(e.key === "a" || e.key === "A"){
-                socket.emit('start',
+                socket.emit('startCommands',
                 {
                     key: 'a',
                     socketID: socket.id
                 });
             }
             if(e.key === "d" || e.key === "D"){
-                socket.emit('start',
+                socket.emit('startCommands',
                 {
                     key: 'd',
                     socketID: socket.id
                 });
             }
             if(e.keyCode === 32) {
-                socket.emit('start',
+                socket.emit('startCommands',
                 {
                     key: 'spacebar',
                     socketID: socket.id

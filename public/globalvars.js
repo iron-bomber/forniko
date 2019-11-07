@@ -1,5 +1,5 @@
 let host = false;
-let selectScreen = true;
+let selectScreen = false;
 let startScreen = false;
 let mainGame = false;
 let gameRunning = false;
@@ -7,10 +7,16 @@ let gameComplete = false;
 let stopMainLoop = false;
 let playerOneDead = false;
 let playerTwoDead = false;
+let playerThreeDead = false;
+let playerFourDead = false;
 let playerOneX;
 let playerOneY;
 let playerTwoX;
 let playerTwoY;
+let playerThreeX;
+let playerThreeY;
+let playerFourX;
+let playerFourY;
 let numOfPlayers;
 let playersLeft;
 let playerScores = {p1: 0, p2: 0, p3: 0, p4: 0};
@@ -161,6 +167,12 @@ p4Left.src ="./Images/p4/p4WalkLeft.png";
 p4Right.src="./Images/p4/p4WalkRight.png";
 p4Up.src="./Images/p4/p4WalkUp.png";
 p4Down.src="./Images/p4/p4WalkDown.png";
+
+
+var leftWall = new Image();
+leftWall.src="./Images/leftWall.png";
+var rock = new Image();
+rock.src="./Images/rock.png";
 
 let p11
 let p12;

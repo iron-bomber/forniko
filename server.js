@@ -134,28 +134,29 @@ io.on('connection', (socket) => {
     io.sockets.emit('newPlayer', sendNewPlayer);
 
     if(players.length == 1){
-        io.sockets.emit('youhost')
     }
-
-    if (players.length > 0) {
+    
+    if (players.length == 1) {
+        io.sockets.emit('youhost')
         // io.sockets.emit('startScreen');
         console.log('starting game');
-            serverRoundStarted = true;                    //Prevents this from being called by all players
-                io.sockets.emit('start-game', theMap);    //Starts all players games
+            // serverRoundStarted = true;                    //Prevents this from being called by all players
+                io.sockets.emit('start-game');       //Starts all players games
                 mainFrameInterval =  setInterval(()=>{    
                     io.sockets.emit('ram', (true))        //sends animation frame to all players
                 },1000/60)
     }
 
     // ALTERNATE START GAME BASED ON ROUND RESET
-    socket.on('start',()=> {
+    socket.on('startRound',()=> {
         if(!serverRoundStarted){
-            console.log('starting game');
+            console.log('starting round');
             serverRoundStarted = true;                    //Prevents this from being called by all players
-                io.sockets.emit('start-game', theMap);    //Starts all players games
-                mainFrameInterval =  setInterval(()=>{    
-                    io.sockets.emit('ram', (true))        //sends animation frame to all players
-                },1000/60)
+            clearInterval(mainFrameInterval)
+            mainFrameInterval =  setInterval(()=>{    
+                io.sockets.emit('ram', (true))        //sends animation frame to all players
+            },1000/60)
+            io.sockets.emit('startRound', theMap);    //Starts all players games
         }
     })
 
@@ -174,10 +175,12 @@ io.on('connection', (socket) => {
         clearInterval(mainFrameInterval)    //Stops mainLoop animation
         serverRoundStarted = false;         //Lets client restart the round
     })
-    socket.on('select', (select) => {
+
+    socket.on('selectCommands', (select) => {
         emitSelect(select);
     })
-    socket.on('start', (select) => {
+
+    socket.on('startCommands', (select) => {
         emitStart(select);
     })
     

@@ -16,11 +16,8 @@ class Game {
     }
 
     //Draws the map based on the 2d Array m.bombMap
-    createMap() {
-        var leftWall = new Image();
-        leftWall.src="./Images/leftWall.png";
-        var rock = new Image();
-        rock.src="./Images/rock.png";
+    drawMap() {
+        console.log('drawing map')
         let xCoord = 0;
         let yCoord = 0;
         for(let i = 0; i < m.bombMap.length; i++) {
@@ -77,24 +74,25 @@ class Game {
 }
 
 let go = true;
+
+//LOOP SELECTOR
 socket.on('ram', (data) =>{
     if(data){
-        if(selectScreen === true){
-            selectLoop();
-        }
-        if(startScreen === true){
-            console.log('starting startscreen')
-            startLoop()
-        }
         if(mainGame === true){
-            mainLoop()
+            mainLoop();
+        }
+        else if(startScreen === true){
+            startLoop();
+        }
+        else if(selectScreen === true){
+            selectLoop();
         }
     }
 })
         
 function mainLoop(){
     // console.log('mainloop')
-    console.log(playersLeft)
+    // console.log(playersLeft)
             
     if (playersLeft === 1) {
         console.log('players left is one, resetting game')
@@ -114,7 +112,8 @@ function mainLoop(){
             socket.emit('start');
         }, 5000)
     }
-    
+
+
     //GRID PLACER & MoveCheck
     for (let i = 0; i < g.playerArr.length; i++) {
         // console.log(g.playerArr.length)
@@ -126,9 +125,10 @@ function mainLoop(){
             }
         }
     }
+
     //Clear canvas
     ctx.clearRect(0, 0, 750, 750);
-    g.createMap();
+    g.drawMap();
     // Updates player attributes
     // for (let i = 0; i < g.playerArr.length; i++) {
     //     document.getElementById(`p${i+1}-pwr`).innerText = `Bomb Power: ${g.playerArr[i].bombPower}`;
@@ -221,11 +221,12 @@ socket.on('movement', (data) => {
     }
 });
 
-socket.on('select', (data)=>{
+socket.on('selecting', (data)=>{
     sel.movePosition(sel.p1, data.key)
 })
 
-socket.on('start', (select)=>{
+socket.on('starting', (select)=>{
+    console.log('receiving start')
     s.movePosition(s[`p${players.indexOf(select.socketID)+1}`], select.key);
 })
 
@@ -246,6 +247,8 @@ function initializeGame(data) {
     m = data;
     playerOneDead = false;
     playerTwoDead = false;
+    playerThreeDead = false;
+    playerFourDead = false;
     g.createPlayer('red', 60, 75, 1, 1, 1);
     g.createSprite(p1Left, p1Right, p1Up, p1Down, p1Death, 'down', 0, spriteHeight1);
     g.createPlayer('blue', 760, 760, 15, 15, 2);
@@ -256,6 +259,9 @@ function initializeGame(data) {
     // g.createSprite(p2Left, p2Right, p2Up, p2Down, p2Death, 'down', 1, spriteHeight2);
     numOfPlayers = g.playerArr.length;
     playersLeft = g.playerArr.length;
+    startScreen = false;
+    mainGame = true;
+    commands();
     startMovement(); //Start movement emission to server
     setTimeout(() => {
         gameReset = false;
@@ -264,10 +270,9 @@ function initializeGame(data) {
 
 
 //TELLS THIS CLIENT TO RESTART GAME
-// socket.on('start-game', (data) => {
-//     initializeGame(data);
-//     mainLoop();
-// }) 
+socket.on('startRound', (data) => {
+    initializeGame(data);
+}) 
 
 //TELLS THIS CLIENT TO Selectscreen
 socket.on('start-game', ()=>{
@@ -277,6 +282,8 @@ socket.on('start-game', ()=>{
 socket.on('youhost', ()=>{
     console.log('you are the host')
     host = true;
+    selectScreen = true;
+    commands();
 }) 
 
 
@@ -396,16 +403,10 @@ class Startscreen{
                         //The Player.id gets that sprite
                     }
                     if(player.position == 5){
-                        initializeGame(); 
-                        mainLoopable(); 
-                        gameRunning = true; 
-                        commands();
+                        socket.emit('startRound')
                     }
                     if(player.position == 6){
-                        initializeGame(); 
-                        mainLoopable(); 
-                        gameRunning = true; 
-                        commands();
+                        socket.emit('startRound')
                     }
                 }
                 break;
@@ -606,13 +607,10 @@ function startLoop(){
         // s.drawBorder(s.p4)
         
     }
-    console.log(gameRunning)
+    // console.log(gameRunning)
     
     //Draw start button
     ctx.drawImage(startBtn, 0, 0, 380, 170, 270, 550, 300, 130);
-    if(gameRunning == false){
-        requestAnimationFrame(startLoop);
-    }
 }
 
 function restartSession(){
@@ -666,24 +664,25 @@ class Select{
             case "spacebar":
                 player.exists = false;
                 if(player.position == 1){
+                    console.log('pressed 2players')
                     this.twoplayer = true;
                     s = new Startscreen();
-                    startLoop();
                     selectScreen = false;
+                    startScreen = true;
                     commands();
                 }
                 if(player.position == 2){
                     this.threeplayer = true;
                     s = new Startscreen();
-                    startLoop();
                     selectScreen = false;
+                    startScreen = true;
                     commands();
                 }
                 if(player.position == 3){
                     this.fourplayer = true;
                     s = new Startscreen();
-                    startLoop();
                     selectScreen = false;
+                    startScreen = true;
                     commands();
                 }
                 break;
@@ -733,5 +732,8 @@ let sel = new Select();
 // selectLoop();
 // selectScreen = true;
 // commands();
+// startMovement()
 
-startMovement()
+// socket.on('beginselect', ()=>{
+
+// })
