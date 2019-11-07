@@ -1,56 +1,67 @@
+let tempUp = false;
+let tempRight = false;
+let tempLeft = false;
+let tempDown = false;
+let tempPressed = "down";
+let tempBomb = false;
+function startMovement() {
+        // console.log('sending movement to server')
+        let movementInterval = setInterval(()=>{
+            // console.log('movement sending')
+            let data = {
+                playerID: socket.id,
+                up: tempUp,
+                left: tempLeft,
+                down: tempDown,
+                right: tempRight,
+                bomb: tempBomb,
+                tempPressed: tempPressed,
+            }
+            socket.emit('movement', (data))
+            tempBomb = false;
+        },1000/60)
+}
+
+
 let socket = io.connect();
 console.log('you are now connected to the server')
 console.log('socket',socket)
 
 document.onkeypress = function(e){
     if(e.key === "s" || e.key === "S"){
-        socket.emit('moveDown', {
-            playerID: socket.id
-        })
+        tempDown = true;
     }
     if(e.key === "w" || e.key === "W"){
-        socket.emit('moveUp', {
-            playerID: socket.id
-        })
+        tempUp = true;
     }
     if(e.key === "a" || e.key === "A"){
-        socket.emit('moveLeft', {
-            playerID: socket.id
-        })
+        tempLeft = true;
     }
     if(e.key === "d" || e.key === "D"){
-        socket.emit('moveRight', {
-            playerID: socket.id
-        })
+        tempRight = true;
     }
     // Drop bomb
     if(e.keyCode === 32){
         e.preventDefault();
-        socket.emit('dropBomb', {
-            playerID: socket.id
-        })
+        tempBomb = true;
     }
 }
 
 document.onkeyup = function(e){
     if(e.key === "s" || e.key === "S"){
-        socket.emit('moveDownFalse', {
-            playerID: socket.id
-        })
+        tempDown = false;
+        tempPressed = "down"
     }
     if(e.key === "w" || e.key === "W"){
-        socket.emit('moveUpFalse', {
-            playerID: socket.id
-        })
+        tempUp = false;
+        tempPressed = "up"
     }
     if(e.key === "a" || e.key === "A"){
-        socket.emit('moveLeftFalse', {
-            playerID: socket.id
-        })
+        tempLeft = false;
+        tempPressed = "left"
     }
     if(e.key === "d" || e.key === "D"){
-        socket.emit('moveRightFalse', {
-            playerID: socket.id
-        })
+        tempRight = false;
+        tempPressed = "right"
     }
 }

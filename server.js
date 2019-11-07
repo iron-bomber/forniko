@@ -117,11 +117,6 @@ theMap.generateRocks();
 console.log('resetting');
 
 
-
-
-
-
-
 io.on('connection', (socket) => {
     console.log('connection made');
     players.push(socket.id);
@@ -130,35 +125,59 @@ io.on('connection', (socket) => {
     if (players.length > 0) {
         console.log('starting game');
             io.sockets.emit('start-game', theMap);
+            let frameInterval = setInterval(()=>{
+                io.sockets.emit('ram', (true))
+            },1000/60)
     }
+    
+    //New Movement data
+    socket.on('movement', (data) => {
+            io.sockets.emit('movement', data);
+    });
 
+        
+    
+    // //DECIDES HOST
+    // if (players.length === 1){
+    //     let data = true;
+    //     socket.emit('youhost', data)
+    // }
+    // //RECEIVE AND SEND HOST DATA
+    // socket.on('hostData', (hostData) =>{
+    //     io.sockets.emit('hostData', hostData);
+    // })
     // Server receives move down
-    socket.on('moveDown', (data) => {
-        io.sockets.emit('moveDown', data);
-    });
-    socket.on('moveUp', (data) => {
-        io.sockets.emit('moveUp', data);
-    });
-    socket.on('moveLeft', (data) => {
-        io.sockets.emit('moveLeft', data);
-    });
-    socket.on('moveRight', (data) => {
-        io.sockets.emit('moveRight', data);
-    });
-    socket.on('dropBomb', (data) => {
-        io.sockets.emit('dropBomb', data);
-    });
+    // socket.on('moveDown', (data) => {
+    //     io.sockets.emit('moveDown', data);
+    // });
+    // socket.on('moveUp', (data) => {
+    //     io.sockets.emit('moveUp', data);
+    // });
+    // socket.on('moveLeft', (data) => {
+    //     io.sockets.emit('moveLeft', data);
+    // });
+    // socket.on('moveRight', (data) => {
+    //     io.sockets.emit('moveRight', data);
+    // });
+    // socket.on('dropBomb', (data) => {
+    //     io.sockets.emit('dropBomb', data);
+    // });
 
-    socket.on('moveDownFalse', (data) => {
-        io.sockets.emit('moveDownFalse', data);
-    });
-    socket.on('moveUpFalse', (data) => {
-        io.sockets.emit('moveUpFalse', data);
-    });
-    socket.on('moveLeftFalse', (data) => {
-        io.sockets.emit('moveLeftFalse', data);
-    });
-    socket.on('moveRightFalse', (data) => {
-        io.sockets.emit('moveRightFalse', data);
-    });
+    // socket.on('moveDownFalse', (data) => {
+    //     io.sockets.emit('moveDownFalse', data);
+    // });
+    // socket.on('moveUpFalse', (data) => {
+    //     io.sockets.emit('moveUpFalse', data);
+    // });
+    // socket.on('moveLeftFalse', (data) => {
+    //     io.sockets.emit('moveLeftFalse', data);
+    // });
+    // socket.on('moveRightFalse', (data) => {
+    //     io.sockets.emit('moveRightFalse', data);
+    // });
+
+
+
+
+
 });

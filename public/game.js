@@ -76,7 +76,17 @@ class Game {
     }
 }
 
+let go = true;
+socket.on('ram', (data) =>{
+    if(data){
+        mainLoop();
+        console.log(g.playerArr[0].speed)
+    }
+})
+        
 function mainLoop(){
+    // console.log('mainloop')
+            
     if (playersLeft === 1) {
         for(let i = 0; i < g.playerArr.length; i++) {
             if (typeof g.playerArr[i] === 'object') {
@@ -95,7 +105,9 @@ function mainLoop(){
     }
     //GRID PLACER & MoveCheck
     for (let i = 0; i < g.playerArr.length; i++) {
+        // console.log(g.playerArr.length)
         if(g.playerArr[i] !== ''){
+            // console.log(g.playerArr[i])
             g.playerArr[i].gridPlacer();
             if(g.playerArr[i].moveUp || g.playerArr[i].moveDown || g.playerArr[i].moveLeft || g.playerArr[i].moveRight){
                 g.playerArr[i].move();
@@ -122,7 +134,7 @@ function mainLoop(){
     if (playerTwoDead) {
         g.spriteArr[1].drawDeath(playerTwoX, playerTwoY);
     }
-
+    
     
     //PLAYER SPRITES
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -142,7 +154,7 @@ function mainLoop(){
             || g.playerArr[i].moveLeft == true && g.playerArr[i].moveRight == true && g.playerArr[i].moveUp == true && g.playerArr[i].moveDown == true
             || g.playerArr[i].moveLeft == false && g.playerArr[i].moveRight == false && g.playerArr[i].moveUp == false && g.playerArr[i].moveDown == false
         ){
-            g.spriteArr[i].drawImgIdle()
+            g.spriteArr[i].drawImgIdle();
         }
         else if(g.playerArr[i].moveLeft == true){
             g.spriteArr[i].drawImgLeft()
@@ -156,7 +168,7 @@ function mainLoop(){
     }
 
     //Loop this function 60fps
-    requestAnimationFrame(mainLoop);
+
 
 }// END OF MAIN LOOP
 
@@ -169,47 +181,71 @@ socket.on('newPlayer', (data) => {
     console.log(`New player, ${data[0]}, number of players: ${players.length}`);
 });
 
-socket.on('moveDown', (data) => {
-    g.playerArr[players.indexOf(data.playerID)].moveDown = true;
-});
-socket.on('moveUp', (data) => {
-    g.playerArr[players.indexOf(data.playerID)].moveUp = true;
-});
-socket.on('moveLeft', (data) => {
-    g.playerArr[players.indexOf(data.playerID)].moveLeft = true;
-});
-socket.on('moveRight', (data) => {
-    g.playerArr[players.indexOf(data.playerID)].moveRight = true;
-});
-socket.on('dropBomb', (data) => {
-    if(g.playerArr[players.indexOf(data.playerID)].bombAmmo > 0){
-        if (m.bombMap[g.playerArr[players.indexOf(data.playerID)].iGrid][g.playerArr[players.indexOf(data.playerID)].jGrid] === 'free') {
-            // Create new bomb (player, player Y, player X, player bomb power, bomb ID)
-            let newBomb = (new Bomb(g.playerArr[players.indexOf(data.playerID)], g.playerArr[players.indexOf(data.playerID)].iGrid, g.playerArr[players.indexOf(data.playerID)].jGrid, g.playerArr[players.indexOf(data.playerID)].bombPower, bombIDs));
-            bombIDs++;
-            newBomb.gridPlacer();
-            newBomb.timerExplode();
-            g.playerArr[players.indexOf(data.playerID)].bombAmmo -= 1;
-        }
-    }       
+// socket.on('moveDown', (data) => {
+//     g.playerArr[players.indexOf(data.playerID)].moveDown = true;
+// });
+// socket.on('moveUp', (data) => {
+//     g.playerArr[players.indexOf(data.playerID)].moveUp = true;
+// });
+// socket.on('moveLeft', (data) => {
+//     g.playerArr[players.indexOf(data.playerID)].moveLeft = true;
+// });
+// socket.on('moveRight', (data) => {
+//     g.playerArr[players.indexOf(data.playerID)].moveRight = true;
+// });
+// socket.on('dropBomb', (data) => {
+//     if(g.playerArr[players.indexOf(data.playerID)].bombAmmo > 0){
+//         if (m.bombMap[g.playerArr[players.indexOf(data.playerID)].iGrid][g.playerArr[players.indexOf(data.playerID)].jGrid] === 'free') {
+//             // Create new bomb (player, player Y, player X, player bomb power, bomb ID)
+//             let newBomb = (new Bomb(g.playerArr[players.indexOf(data.playerID)], g.playerArr[players.indexOf(data.playerID)].iGrid, g.playerArr[players.indexOf(data.playerID)].jGrid, g.playerArr[players.indexOf(data.playerID)].bombPower, bombIDs));
+//             bombIDs++;
+//             newBomb.gridPlacer();
+//             newBomb.timerExplode();
+//             g.playerArr[players.indexOf(data.playerID)].bombAmmo -= 1;
+//         }
+//     }       
+// });
+
+// socket.on('moveDownFalse', (data) => {
+//     g.playerArr[players.indexOf(data.playerID)].moveDown = false;
+//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "down";
+// });
+// socket.on('moveUpFalse', (data) => {
+//     g.playerArr[players.indexOf(data.playerID)].moveUp = false;
+//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "up";
+// });
+// socket.on('moveLeftFalse', (data) => {
+//     g.playerArr[players.indexOf(data.playerID)].moveLeft = false;
+//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "left"
+// });
+// socket.on('moveRightFalse', (data) => {
+//     g.playerArr[players.indexOf(data.playerID)].moveRight = false;
+//     g.spriteArr[players.indexOf(data.playerID)].lastPressed = "right"
+// });
+
+
+socket.on('movement', (data) => {
+    // console.log('receving server movement')
+    g.playerArr[players.indexOf(data.playerID)].moveRight = data.right;
+    g.playerArr[players.indexOf(data.playerID)].moveLeft = data.left;
+    g.playerArr[players.indexOf(data.playerID)].moveUp = data.up;
+    g.playerArr[players.indexOf(data.playerID)].moveDown = data.down;
+    g.spriteArr[players.indexOf(data.playerID)].lastPressed = data.tempPressed;
+    if(data.bomb){
+        if(g.playerArr[players.indexOf(data.playerID)].bombAmmo > 0){
+            if (m.bombMap[g.playerArr[players.indexOf(data.playerID)].iGrid][g.playerArr[players.indexOf(data.playerID)].jGrid] === 'free') {
+                // Create new bomb (player, player Y, player X, player bomb power, bomb ID)
+                let newBomb = (new Bomb(g.playerArr[players.indexOf(data.playerID)], g.playerArr[players.indexOf(data.playerID)].iGrid, g.playerArr[players.indexOf(data.playerID)].jGrid, g.playerArr[players.indexOf(data.playerID)].bombPower, bombIDs));
+                bombIDs++;
+                newBomb.gridPlacer();
+                newBomb.timerExplode();
+                g.playerArr[players.indexOf(data.playerID)].bombAmmo -= 1;
+            }
+        }   
+    }
 });
 
-socket.on('moveDownFalse', (data) => {
-    g.playerArr[players.indexOf(data.playerID)].moveDown = false;
-    g.spriteArr[players.indexOf(data.playerID)].lastPressed = "down";
-});
-socket.on('moveUpFalse', (data) => {
-    g.playerArr[players.indexOf(data.playerID)].moveUp = false;
-    g.spriteArr[players.indexOf(data.playerID)].lastPressed = "up";
-});
-socket.on('moveLeftFalse', (data) => {
-    g.playerArr[players.indexOf(data.playerID)].moveLeft = false;
-    g.spriteArr[players.indexOf(data.playerID)].lastPressed = "left"
-});
-socket.on('moveRightFalse', (data) => {
-    g.playerArr[players.indexOf(data.playerID)].moveRight = false;
-    g.spriteArr[players.indexOf(data.playerID)].lastPressed = "right"
-});
+
 
 let g;
 let m;
@@ -222,12 +258,14 @@ function initializeGame(data) {
     g.createSprite(p1Left, p1Right, p1Up, p1Down, p1Death, 'down', 0, spriteHeight1);
     g.createPlayer('blue', 760, 760, 15, 15, 2);
     g.createSprite(p2Left, p2Right, p2Up, p2Down, p2Death, 'down', 1, spriteHeight2);
-    g.createPlayer('yello', 760, 60, 1, 1, 3);
-    g.createSprite(p1Left, p1Right, p1Up, p1Down, p1Death, 'down', 0, spriteHeight1);
-    g.createPlayer('green', 60, 760, 15, 15, 4);
-    g.createSprite(p2Left, p2Right, p2Up, p2Down, p2Death, 'down', 1, spriteHeight2);
+    // g.createPlayer('yello', 760, 60, 1, 1, 3);
+    // g.createSprite(p1Left, p1Right, p1Up, p1Down, p1Death, 'down', 0, spriteHeight1);
+    // g.createPlayer('green', 60, 760, 15, 15, 4);
+    // g.createSprite(p2Left, p2Right, p2Up, p2Down, p2Death, 'down', 1, spriteHeight2);
     numOfPlayers = g.playerArr.length;
     playersLeft = g.playerArr.length;
+    startMovement(); //Start movement emission to server
+    socket.emit('start');
     setTimeout(() => {
         gameReset = false;
     }, 2999);
@@ -237,8 +275,6 @@ socket.on('start-game', (data) => {
     initializeGame(data);
     mainLoop();
 }) 
-
-
 
 
 
